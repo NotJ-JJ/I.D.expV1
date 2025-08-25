@@ -1,7 +1,10 @@
 extends CharacterBody2D
 
+@export var Health := 100.0
+
 @onready var sprite = $Sprite
 @onready var dash_timer = $DashTimer
+@onready var dash_cooldown = $DashCooldown
 
 @export var movement_speed := 100.0
 @export var dash_speed := 250.0
@@ -9,6 +12,7 @@ extends CharacterBody2D
 var character_direction:Vector2
 var to_dash := false
 var dashing := false
+var can_dash := true
 
 func _physics_process(_delta):
 	if dashing:
@@ -40,9 +44,14 @@ func _physics_process(_delta):
 	move_and_slide()
 
 func _input(event):
-	if event.is_action_pressed("dash") and !dashing:
+	if event.is_action_pressed("dash") and !dashing and can_dash:
+		can_dash = false
 		to_dash = true
 		dash_timer.start()
 
 func _on_dash_timer_timeout():
 	dashing = false
+	dash_cooldown.start()
+
+func _on_dash_cooldown_timeout():
+	can_dash = true
