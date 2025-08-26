@@ -8,11 +8,14 @@ var on_cooldown := false
 var target
 
 func Attack():
-	if on_cooldown == false and target:
-		on_cooldown = true
-		target.Health -= Damage
-		print("Hit for " + str(target.Health))
-		timer.start()
+	if on_cooldown == true or !target:
+		return
+	if target.Dead == true:
+		return
+	on_cooldown = true
+	target.HealthValue -= Damage
+	print("Hit for " + str(Damage))
+	timer.start()
 
 func _ready():
 	timer.wait_time = Cooldown

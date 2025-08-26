@@ -1,6 +1,11 @@
 extends CharacterBody2D
 
-@export var Health := 100.0
+
+@export var HealthValue := 100.0:
+	set(newHealth):
+		hurt(newHealth)
+var Health := 0.0
+@export var Dead := false
 
 @onready var sprite = $Sprite
 @onready var dash_timer = $DashTimer
@@ -14,7 +19,21 @@ var to_dash := false
 var dashing := false
 var can_dash := true
 
+func hurt(newHealth):
+	Health -= HealthValue-newHealth
+	print(Health)
+	if Health <= 0:
+		sprite.play("death")
+		Dead = true
+	else:
+		sprite.play("hurt")
+
+func _ready():
+	Health = HealthValue
+
 func _physics_process(_delta):
+	if Dead == true:
+		return
 	if dashing:
 		velocity = character_direction * dash_speed
 		move_and_slide()
@@ -33,13 +52,13 @@ func _physics_process(_delta):
 			to_dash = false
 			dashing = true
 			velocity = character_direction * dash_speed
-			sprite.animation = "dash"
+			sprite.play("dash")
 		else:
 			velocity = character_direction * movement_speed
-			sprite.animation = "move"
+			sprite.play("move")
 	else:
 		velocity = velocity.move_toward(Vector2.ZERO,movement_speed)
-		sprite.animation = "idle"
+		sprite.play("idle")
 	
 	move_and_slide()
 

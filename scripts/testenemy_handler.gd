@@ -1,18 +1,16 @@
 extends CharacterBody2D
 @onready var sprite = $AnimatedSprite2D
 
-@export var Health := 25.0:
-	set(ammount):
-		print(ammount)
+@export var Health := 25.0
 @export var Speed := 100.0
 
 var target:CharacterBody2D
 
-func died():
-	pass
-
 func _physics_process(_delta):
 	if target:
+		if target.Dead == true:
+			target = null
+			return
 		velocity = position.direction_to(target.position)*Speed
 		move_and_slide()
 		sprite.play("move")
@@ -24,7 +22,8 @@ func _physics_process(_delta):
 		sprite.play("idle")
 
 func _on_detection_zone_body_entered(body):
-	target = body
+	if body.Dead == false:
+		target = body
 
 func _on_detection_zone_body_exited(body):
 	target = null
